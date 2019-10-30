@@ -36,11 +36,12 @@ public class AppInit {
         TwitterPropertiesReader propertiesReader = new TwitterPropertiesReader("twitter.properties");
         BlockingQueue<String> msgQueue = new LinkedBlockingDeque<String>(1000);
         List<String> terms = Lists.newArrayList("java", "javascript");
+        TweetProducer tweetProducer = new TweetProducer("marklogic");
         try {
             Properties twitterProperties = propertiesReader.read();
             System.out.println(twitterProperties.toString());
             Thread twitterStream = new Thread(new TwitterSearchStream(twitterProperties, msgQueue, terms));
-            Thread reader = new Thread(new TwitterSearchStreamReader(msgQueue));
+            Thread reader = new Thread(new TwitterSearchStreamReader(msgQueue, tweetProducer));
             twitterStream.start();
             reader.start();
         } catch (IOException e) {
